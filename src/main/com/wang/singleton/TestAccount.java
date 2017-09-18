@@ -37,14 +37,24 @@ class Account implements Runnable {
     @Override
     public void run() {
         for (int i = 0; i < 3; i++) {
-            synchronized (Account.class) {
+            synchronized (this) {
+                notify();
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 money += 1000;
-                System.out.println(Thread.currentThread().getName()+"金额：" + money);
+                System.out.println(Thread.currentThread().getName() + "金额：" + money);
+
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (money == 2) {
+                    break;
+                }
             }
         }
     }
