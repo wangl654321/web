@@ -1,5 +1,9 @@
 package com.wang;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /***
  *
  *
@@ -19,20 +23,30 @@ package com.wang;
  *
  */
 public class Threads {
-    private static Integer i = 0;
 
-    public static void main(String[] args) {
+    // private  static AtomicInteger i = new AtomicInteger(0);
+    private static int i = 0;
+    private static Lock lock = new ReentrantLock();// 锁对象
+
+    public static void main(String[] args) throws InterruptedException {
+        long begin = System.currentTimeMillis();
         for (int j = 0; j < 100; j++) {
             Thread th = new Thread() {
                 @Override
                 public void run() {
-                    synchronized (Threads.class) {
-                        ++i;
-                        System.out.println(this.getName() + ":" + i);
-                    }
+                    //synchronized (Threads.class) {
+                    //  ++i;
+                        lock.lock();
+                    i = i + 1;
+                    System.out.println(this.getName() + ":" + i);
+                        lock.unlock();
+                    // }
                 }
             };
             th.start();
+            th.join();
         }
+        long end = System.currentTimeMillis();
+        System.out.print(end - begin); //112455，111404，109122
     }
 }
